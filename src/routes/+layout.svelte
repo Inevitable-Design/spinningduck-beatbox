@@ -6,7 +6,7 @@
 	let videoSrc = duck;
 	let video: any;
 
-	onMount(() => {
+	onMount(async () => {
 		video = document.getElementById('video');
 
 		// Ensure the video keeps playing
@@ -28,7 +28,22 @@
 				video.play();
 			}
 		});
+		play();
 	});
+
+	async function play() {
+		await new Promise((resolve) => setTimeout(resolve, 1000));
+		video.play();
+	}
+
+	$: {
+		if (video) {
+			play();
+			if (video.paused) {
+				video.play();
+			}
+		}
+	}
 </script>
 
 <main class="relative h-screen bg-white overflow-hidden">
