@@ -5,12 +5,14 @@
 
 	let videoSrc = duck;
 	let video: any;
+	let volume: any;
+	let show_button = false;
+	let erenabled = false;
+	let button_title = 'Toggle Earrape!?';
 
 	onMount(async () => {
 		video = document.getElementById('video');
-
-		// Ensure the video keeps playing
-		video.addEventListener('ended', () => {
+		addEventListener('ended', () => {
 			video.currentTime = 0; // Rewind to the beginning
 			video.play();
 		});
@@ -22,13 +24,17 @@
 
 		// Start playing the video when the screen is clicked
 		video.addEventListener('click', () => {
+			if (show_button) {
+				show_button = false;
+			} else {
+				show_button = true;
+			}
 			if (video.paused) {
 				video.play();
 			} else {
 				video.play();
 			}
 		});
-		play();
 	});
 
 	async function play() {
@@ -41,6 +47,37 @@
 			play();
 			if (video.paused) {
 				video.play();
+			}
+		}
+	}
+
+	function amplifyMedia(mediaElem: any, multiplier: number) {
+		var context = new (window.AudioContext || window.webkitAudioContext)(),
+			result = {
+				context: context,
+				source: context.createMediaElementSource(mediaElem),
+				gain: context.createGain(),
+				media: mediaElem,
+				amplify: function (multiplier: number) {
+					result.gain.gain.value = multiplier;
+				},
+				getAmpLevel: function () {
+					return result.gain.gain.value;
+				}
+			};
+		result.source.connect(result.gain);
+		result.gain.connect(context.destination);
+		result.amplify(multiplier);
+		return result;
+	}
+
+	function handleButtonClick() {
+		if (erenabled) {
+			button_title = 'Lmao, nope';
+		} else {
+			if (video) {
+				amplifyMedia(video, 100);
+				erenabled = true;
 			}
 		}
 	}
@@ -57,6 +94,18 @@
 		<track kind="captions" />
 		<source src={duck} type="video/mp4" />
 	</video>
+
+	{#if show_button}
+		<!-- Your overengineered button -->
+		<div class="fixed bottom-4 right-4">
+			<button
+				on:click={handleButtonClick}
+				class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+			>
+				{button_title}
+			</button>
+		</div>
+	{/if}
 </main>
 
 <style>
