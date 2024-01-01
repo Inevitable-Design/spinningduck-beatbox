@@ -1,10 +1,44 @@
 <script lang="ts">
 	import './main.css';
 	import duck from '$lib/assets/duck.mp4';
+	import { onMount } from 'svelte';
+
+	let videoSrc = duck;
+	let video: any;
+
+	onMount(() => {
+		video = document.getElementById('video');
+
+		// Ensure the video keeps playing
+		video.addEventListener('ended', () => {
+			video.currentTime = 0; // Rewind to the beginning
+			video.play();
+		});
+
+		// Start playing the video if it's not started
+		if (video.paused) {
+			video.play();
+		}
+
+		// Start playing the video when the screen is clicked
+		video.addEventListener('click', () => {
+			if (video.paused) {
+				video.play();
+			} else {
+				video.play();
+			}
+		});
+	});
 </script>
 
 <main class="relative h-screen bg-white overflow-hidden">
-	<video autoplay playsinline loop class="w-full h-full object-contain mx-auto mask-blur">
+	<video
+		id="video"
+		autoplay
+		playsinline
+		loop
+		class="w-full h-full object-contain mx-auto mask-blur video"
+	>
 		<track kind="captions" />
 		<source src={duck} type="video/mp4" />
 	</video>
